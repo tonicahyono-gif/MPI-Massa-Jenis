@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ekosistem Sungai Interaktif</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#eaf6ff;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+.container{
+    position:relative;
+    width:100%;
+    max-width:1365px;
+}
+
+.container img{
+    width:100%;
+    display:block;
+    border-radius:15px;
+}
+
+/* HOTSPOT */
+
+.hotspot{
+    position:absolute;
+    cursor:pointer;
+    transition:0.3s;
+
+    /* Saat edit aktifkan */
+    background:rgba(255,0,0,0.08);
+    border:2px dashed rgba(255,0,0,0.3);
+}
+
+.hotspot:hover{
+    background:rgba(255,255,0,0.25);
+}
+
+/* POPUP */
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    display:none;
+    z-index:1000;
+}
+
+.popup{
+
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:90%;
+    max-width:500px;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    z-index:1001;
+
+    display:none;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+
+    animation:muncul .3s ease;
+}
+
+@keyframes muncul{
+from{
+opacity:0;
+transform:translate(-50%,-45%);
+}
+to{
+opacity:1;
+transform:translate(-50%,-50%);
+}
+}
+
+.popup h2{
+    color:#2e7d32;
+    margin-bottom:15px;
+}
+
+.popup p{
+    line-height:1.6;
+    font-size:16px;
+}
+
+.popup button{
+
+    margin-top:20px;
+
+    border:none;
+
+    background:#2e7d32;
+
+    color:white;
+
+    padding:10px 20px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+}
+
+.popup button:hover{
+    background:#1b5e20;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<img src="ekosistem_sungai.png" alt="Ekosistem Sungai">
+
+<!-- CEMARA RAWA -->
+<div class="hotspot"
+data-id="cemara"
+style="
+left:0%;
+top:0%;
+width:28%;
+height:48%;
+">
+</div>
+
+<!-- BURUNG -->
+<div class="hotspot"
+data-id="burung"
+style="
+left:1%;
+top:60%;
+width:15%;
+height:25%;
+">
+</div>
+
+<!-- BUAYA -->
+<div class="hotspot"
+data-id="buaya"
+style="
+left:26%;
+top:60%;
+width:35%;
+height:18%;
+">
+</div>
+
+<!-- BAMBU -->
+<div class="hotspot"
+data-id="bambu"
+style="
+left:68%;
+top:0%;
+width:32%;
+height:45%;
+">
+</div>
+
+<!-- KANCIL -->
+<div class="hotspot"
+data-id="kancil"
+style="
+left:66%;
+top:25%;
+width:27%;
+height:38%;
+">
+</div>
+
+<!-- ULAR -->
+<div class="hotspot"
+data-id="ular"
+style="
+left:75%;
+top:65%;
+width:24%;
+height:18%;
+">
+</div>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="popup" id="popup">
+
+<h2 id="nama"></h2>
+
+<p id="informasi"></p>
+
+<button onclick="tutupPopup()">Tutup</button>
+
+</div>
+
+<script>
+
+const data = {
+
+cemara:{
+nama:"🌲 Cemara Rawa",
+info:`
+<b>Nama Spesies:</b> Taxodium distichum<br><br>
+
+<b>Peran dalam Ekosistem:</b> Produsen<br><br>
+
+Cemara rawa dapat membuat makanan sendiri melalui proses fotosintesis. Tumbuhan ini menjadi sumber energi bagi makhluk hidup lain dan membantu menghasilkan oksigen.
+`
+},
+
+burung:{
+nama:"🐦 Burung Raja Udang",
+info:`
+<b>Nama Spesies:</b> Halcyon chloris<br><br>
+
+<b>Peran dalam Ekosistem:</b> Konsumen Tingkat II<br><br>
+
+<b>Jenis:</b> Karnivora<br><br>
+
+Burung ini memakan ikan kecil, serangga, dan hewan kecil lainnya yang hidup di sekitar sungai.
+`
+},
+
+buaya:{
+nama:"🐊 Buaya Muara",
+info:`
+<b>Nama Spesies:</b> Crocodylus porosus<br><br>
+
+<b>Peran dalam Ekosistem:</b> Konsumen Puncak<br><br>
+
+<b>Jenis:</b> Karnivora<br><br>
+
+Buaya merupakan predator yang memangsa ikan, burung, reptil, dan hewan lain sehingga membantu menjaga keseimbangan populasi.
+`
+},
+
+bambu:{
+nama:"🎋 Pohon Bambu",
+info:`
+<b>Nama Spesies:</b> Bambusa vulgaris<br><br>
+
+<b>Peran dalam Ekosistem:</b> Produsen<br><br>
+
+Bambu menghasilkan makanan melalui fotosintesis dan menjadi tempat berlindung bagi berbagai hewan.
+`
+},
+
+kancil:{
+nama:"🦌 Kancil",
+info:`
+<b>Nama Spesies:</b> Tragulus javanicus<br><br>
+
+<b>Peran dalam Ekosistem:</b> Konsumen Tingkat I<br><br>
+
+<b>Jenis:</b> Herbivora<br><br>
+
+Kancil memakan daun, buah, dan tumbuhan sehingga termasuk pemakan tumbuhan.
+`
+},
+
+ular:{
+nama:"🐍 Ular Tikus",
+info:`
+<b>Nama Spesies:</b> Ptyas korros<br><br>
+
+<b>Peran dalam Ekosistem:</b> Konsumen Tingkat II<br><br>
+
+<b>Jenis:</b> Karnivora<br><br>
+
+Ular memangsa tikus, katak, dan hewan kecil lainnya sehingga membantu mengendalikan populasi mangsa.
+`
+}
+
+};
+
+const popup = document.getElementById("popup");
+const overlay = document.getElementById("overlay");
+
+document.querySelectorAll(".hotspot").forEach(item=>{
+
+item.addEventListener("click",()=>{
+
+const id = item.dataset.id;
+
+document.getElementById("nama").innerHTML =
+data[id].nama;
+
+document.getElementById("informasi").innerHTML =
+data[id].info;
+
+popup.style.display="block";
+overlay.style.display="block";
+
+});
+
+});
+
+function tutupPopup(){
+
+popup.style.display="none";
+overlay.style.display="none";
+
+}
+
+overlay.addEventListener("click",tutupPopup);
+
+</script>
+
+</body>
+</html>
